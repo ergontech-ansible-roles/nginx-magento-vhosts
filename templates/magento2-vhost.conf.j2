@@ -1,7 +1,7 @@
 # {{ ansible_managed }}
 
 upstream fastcgi_backend {
-  server unix:{{ php_fpm_listen_socket }};
+  server unix:{{ php_fpm_listen }};
 }
 
 server {
@@ -171,7 +171,7 @@ server {
         fastcgi_param  MAGE_MODE $MAGE_MODE;
 
         # Magento uses the HTTPS env var to detrimine if it is using SSL or not.
-        fastcgi_param  HTTPS $my_ssl;
+        #fastcgi_param  HTTPS $my_ssl;
 
         fastcgi_index  index.php;
         fastcgi_param  SCRIPT_FILENAME  $document_root$fastcgi_script_name;
