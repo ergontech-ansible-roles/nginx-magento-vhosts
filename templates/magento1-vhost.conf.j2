@@ -35,7 +35,7 @@ server {
         deny  all;
 
         include      snippets/fastcgi-php.conf;
-        fastcgi_pass unix:{{ php_fpm_listen_socket }};
+        fastcgi_pass unix:{{ php_fpm_listen }};
     }
 
     # NOTE: silence any health checks
@@ -43,7 +43,7 @@ server {
         access_log off;
 
         include      snippets/fastcgi-php.conf;
-        fastcgi_pass unix:{{ php_fpm_listen_socket }};
+        fastcgi_pass unix:{{ php_fpm_listen }};
     }
 
     include snippets/directive-only/extra-security.conf;
@@ -67,7 +67,7 @@ server {
         fastcgi_param  MAGE_IS_DEVELOPER_MODE {{ mage_dev_code }};
 {% endif %}
 
-        fastcgi_pass unix:{{ php_fpm_listen_socket }};
+        fastcgi_pass unix:{{ php_fpm_listen }};
         include      snippets/fastcgi-php.conf;
 
         chunked_transfer_encoding off;
