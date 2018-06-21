@@ -30,6 +30,27 @@ server {
     charset UTF-8;
     error_page 404 403 = /errors/404.php;
 
+    # NOTE: lock down phpinfo
+    location ~ ^phpinfo.php$ {
+        access_log off;
+
+        allow 127.0.0.1;
+        allow 10.0.0.0/8;    # aws internal
+        allow 96.71.160.117; # ergon office
+        deny  all;
+
+        include      snippets/fastcgi-php.conf;
+        fastcgi_pass fastcgi_backend;
+    }
+
+    # NOTE: silence any health checks
+    location ~ ^/(ping|health_check.php)$ {
+        access_log off;
+
+        include      snippets/fastcgi-php.conf;
+        fastcgi_pass fastcgi_backend;
+    }
+
     # PHP entry point for setup application
     location ~* ^/setup($|/) {
         root $MAGE_ROOT;
