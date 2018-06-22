@@ -45,6 +45,7 @@ server {
 
     # NOTE: silence any health checks
     location ~ ^/(ping|health_check.php)$ {
+        root /var/www/;
         access_log off;
 
         include      snippets/fastcgi-php.conf;
