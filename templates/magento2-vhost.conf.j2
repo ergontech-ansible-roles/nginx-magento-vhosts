@@ -30,8 +30,11 @@ server {
     charset UTF-8;
     error_page 404 403 = /errors/404.php;
 
+    include snippets/realip.conf;
+    include snippets/x-whom.conf;
+
     # NOTE: lock down phpinfo
-    location ~ ^phpinfo.php$ {
+    location ~ ^/phpinfo.php$ {
         access_log off;
 
         allow 127.0.0.1;
@@ -44,8 +47,8 @@ server {
     }
 
     # NOTE: silence any health checks
-    location ~ ^/(ping|health_check.php)$ {
-        root /var/www/;
+    location ~ ^/health_check.php$ {
+        alias /var/www/;
         access_log off;
 
         include      snippets/fastcgi-php.conf;
