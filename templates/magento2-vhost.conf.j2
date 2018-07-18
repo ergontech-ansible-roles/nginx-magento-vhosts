@@ -1,15 +1,21 @@
 # {{ ansible_managed }}
 
+map $host $MAGE_RUN_CODE {
+{% for fqdn in fqdn %}
+    {{ fqdn.domain }} {{ fqdn.code }};
+{% endfor %}
+
 upstream fastcgi_backend {
   server unix:{{ php_fpm_listen }};
 }
 
 server {
     listen {{ nginx_listen_port }};
-    server_name {{ fqdn }} {{ ansible_default_ipv4.address }};
+    server_name {{ fqdn | map(attribute='domain') | join(' ') }} {{ ansible_default_ipv4.address }};
 
     set $MAGE_ROOT {{ release_pub_dir }};
     set $MAGE_MODE {{ mage_run_mode }};
+    set $MAGE_RUN_TYPE website;
 
     #listen 443 ssl;
     #set $my_http "http";
@@ -189,11 +195,15 @@ server {
         fastcgi_pass   fastcgi_backend;
         fastcgi_buffers 1024 4k;
 
-        fastcgi_param  PHP_FLAG  "session.auto_start=off \n suhosin.session.cryptua=off";
-        fastcgi_param  PHP_VALUE "memory_limit=768M \n max_execution_time=18000";
         fastcgi_read_timeout 600s;
         fastcgi_connect_timeout 600s;
+
+        fastcgi_param  PHP_FLAG  "session.auto_start=off \n suhosin.session.cryptua=off";
+        fastcgi_param  PHP_VALUE "memory_limit=768M \n max_execution_time=18000";
+
         fastcgi_param  MAGE_MODE $MAGE_MODE;
+        fastcgi_param  MAGE_RUN_CODE $MAGE_RUN_CODE;
+        fastcgi_param  MAGE_RUN_TYPE $MAGE_RUN_TYPE;
 
         # Magento uses the HTTPS env var to detrimine if it is using SSL or not.
         #fastcgi_param  HTTPS $my_ssl;
@@ -203,22 +213,6 @@ server {
         include        fastcgi_params;
     }
   
-    # PHP entry point for main application
-    location ~ (index|get|static|report|404|503)\.php$ {
-        try_files $uri =404;
-        fastcgi_pass   fastcgi_backend;
-        fastcgi_buffers 1024 4k;
-
-        fastcgi_param  PHP_FLAG  "session.auto_start=off \n suhosin.session.cryptua=off";
-        fastcgi_param  PHP_VALUE "memory_limit=768M \n max_execution_time=18000";
-        fastcgi_read_timeout 600s;
-        fastcgi_connect_timeout 600s;
-
-        fastcgi_index  index.php;
-        fastcgi_param  SCRIPT_FILENAME  $document_root$fastcgi_script_name;
-        include        fastcgi_params;
-    }
-
     # Banned locations (only reached if the earlier PHP entry point regexes don't match)
     location ~* (\.php$|\.htaccess$|\.git) {
         deny all;
