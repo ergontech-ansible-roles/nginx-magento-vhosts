@@ -204,6 +204,7 @@ server {
         fastcgi_param  MAGE_MODE $MAGE_MODE;
         fastcgi_param  MAGE_RUN_CODE $MAGE_RUN_CODE;
         fastcgi_param  MAGE_RUN_TYPE $MAGE_RUN_TYPE;
+        fastcgi_param  ENV {{ env }};
 
         # Magento uses the HTTPS env var to detrimine if it is using SSL or not.
         #fastcgi_param  HTTPS $my_ssl;
