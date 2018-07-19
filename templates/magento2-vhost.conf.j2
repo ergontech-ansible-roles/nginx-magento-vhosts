@@ -4,6 +4,7 @@ map $host $MAGE_RUN_CODE {
 {% for fqdn in fqdn %}
     {{ fqdn.domain }} {{ fqdn.code }};
 {% endfor %}
+}
 
 upstream fastcgi_backend {
   server unix:{{ php_fpm_listen }};
