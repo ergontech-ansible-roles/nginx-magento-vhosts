@@ -18,17 +18,20 @@ server {
     set $MAGE_MODE {{ mage_run_mode }};
     set $MAGE_RUN_TYPE website;
 
-    #listen 443 ssl;
-    #set $my_http "http";
-    #set $my_ssl "off";
-    #set $my_port "80";
-    #if ($http_x_forwarded_proto = "https") {
-    #    set $my_http "https";
-    #    set $my_ssl "on";
-    #    set $my_port "443";
-    #}
-    #ssl_certificate /etc/nginx/ssl/magento.crt;
-    #ssl_certificate_key /etc/nginx/ssl/magento.key;
+    # NOTE: if the request is over http
+    if ($http_x_forwarded_proto != 'https') {
+        set $unsecure true;
+    }
+
+    # NOTE: if the request is from aws alb
+    if ($http_x_amzn_trace_id) {
+      set $unsecure "${unsecure}+aws";
+    }
+
+    # NOTE: redirect any http request from aws alb
+    if ($unsecure = "true+aws") {
+        return 301 https://$server_name$request_uri;
+    }
 
     root {{ release_pub_dir }};
 
@@ -207,8 +210,8 @@ server {
         fastcgi_param  MAGE_RUN_TYPE $MAGE_RUN_TYPE;
         fastcgi_param  ENV {{ env }};
 
-        # Magento uses the HTTPS env var to detrimine if it is using SSL or not.
-        #fastcgi_param  HTTPS $my_ssl;
+        fastcgi_param  SSL_OFFLOADED $is_https if_not_empty;
+        fastcgi_param  HTTPS         $is_https if_not_empty;
 
         fastcgi_index  index.php;
         fastcgi_param  SCRIPT_FILENAME  $document_root$fastcgi_script_name;
