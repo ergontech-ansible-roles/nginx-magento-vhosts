@@ -18,6 +18,10 @@ server {
     set $MAGE_MODE {{ mage_run_mode }};
     set $MAGE_RUN_TYPE website;
 
+    if ($http_x_forwarded_proto = "https") {
+        set $is_https "1";
+    }
+
     # NOTE: if the request is over http
     if ($http_x_forwarded_proto != 'https') {
         set $unsecure true;
