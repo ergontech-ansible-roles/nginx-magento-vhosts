@@ -81,7 +81,7 @@ server {
             fastcgi_connect_timeout 600s;
 
             fastcgi_index  index.php;
-            fastcgi_param  SCRIPT_FILENAME  $document_root$fastcgi_script_name;
+            fastcgi_param  SCRIPT_FILENAME  $realpath_root$fastcgi_script_name;
             include        fastcgi_params;
         }
 
@@ -102,7 +102,7 @@ server {
             fastcgi_split_path_info ^(/update/index.php)(/.+)$;
             fastcgi_pass   fastcgi_backend;
             fastcgi_index  index.php;
-            fastcgi_param  SCRIPT_FILENAME  $document_root$fastcgi_script_name;
+            fastcgi_param  SCRIPT_FILENAME  $realpath_root$fastcgi_script_name;
             fastcgi_param  PATH_INFO        $fastcgi_path_info;
             include        fastcgi_params;
         }
@@ -218,7 +218,7 @@ server {
         fastcgi_param  HTTPS         $is_https if_not_empty;
 
         fastcgi_index  index.php;
-        fastcgi_param  SCRIPT_FILENAME  $document_root$fastcgi_script_name;
+        fastcgi_param  SCRIPT_FILENAME  $realpath_root$fastcgi_script_name;
         include        fastcgi_params;
     }
   
