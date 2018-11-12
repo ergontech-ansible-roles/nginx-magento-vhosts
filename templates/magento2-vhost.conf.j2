@@ -6,6 +6,12 @@ map $host $MAGE_RUN_CODE {
 {% endfor %}
 }
 
+map $host $MAGE_RUN_TYPE {
+{% for fqdn in fqdn %}
+    {{ fqdn.domain }} {{ fqdn.type | default('website') }};
+{% endfor %}
+}
+
 upstream fastcgi_backend {
   server unix:{{ php_fpm_listen }};
 }
@@ -16,7 +22,6 @@ server {
 
     set $MAGE_ROOT {{ release_pub_dir }};
     set $MAGE_MODE {{ mage_run_mode }};
-    set $MAGE_RUN_TYPE website;
 
     if ($http_x_forwarded_proto = "https") {
         set $is_https "1";
