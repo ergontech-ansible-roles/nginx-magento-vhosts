@@ -1,0 +1,19 @@
+---
+
+
+
+env: prod
+magento_version: "2"
+mage_run_mode: production
+release_pub_dir: /var/www/html
+
+fqdn:
+  - domain: dev.test.com
+    code: dev
+    type: website
+
+nginx_use_fpm: false
+nginx_listen_port: 80
+nginx_snippet_includes:
+  - realip.conf;
+  - x-whom.conf;
