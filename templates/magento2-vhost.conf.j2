@@ -1,20 +1,23 @@
 # {{ ansible_managed }}
 
 map $host $MAGE_RUN_CODE {
-{% for fqdn in fqdn %}
-    {{ fqdn.domain }} {{ fqdn.code }};
+{% for item in fqdn %}
+    {{ item.domain }} {{ item.code }};
 {% endfor %}
 }
 
 map $host $MAGE_RUN_TYPE {
-{% for fqdn in fqdn %}
-    {{ fqdn.domain }} {{ fqdn.type | default('website') }};
+{% for item in fqdn %}
+    {{ item.domain }} {{ item.type | default('website') }};
 {% endfor %}
 }
 
-upstream fastcgi_backend {
-  server unix:{{ php_fpm_listen }};
-}
+{% if nginx_use_fpm %}
+    upstream fastcgi_backend {
+        server unix:{{ php_fpm_listen }};
+    }
+{% endif %}
+
 
 server {
     listen {{ nginx_listen_port }};
@@ -49,8 +52,9 @@ server {
     charset UTF-8;
     error_page 404 403 = /errors/404.php;
 
-    include snippets/realip.conf;
-    include snippets/x-whom.conf;
+{% for file in nginx_snippet_includes %}
+    include snippets/{{ file }};
+{% endfor %}
 
     # NOTE: lock down phpinfo
     location ~ ^/phpinfo.php$ {
