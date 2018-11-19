@@ -12,12 +12,9 @@ map $host $MAGE_RUN_TYPE {
 {% endfor %}
 }
 
-{% if nginx_use_fpm %}
-    upstream fastcgi_backend {
-        server unix:{{ php_fpm_listen }};
-    }
-{% endif %}
-
+upstream fastcgi_backend {
+    server unix:{{ php_fpm_listen }};
+}
 
 server {
     listen {{ nginx_listen_port }};
