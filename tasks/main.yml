@@ -1,5 +1,18 @@
 ---
 
+- name: Ensure snippet files exist
+  become: yes
+  file:
+    path: "/etc/nginx/snippets/{{ item }}"
+    mode: 0664
+    state: touch
+  loop: "{{ nginx_snippet_includes }}"
+  changed_when: false
+  tags:
+    - nginx
+    - nginx-configure
+
+# TODO - we can do better
 - name: Install nginx magento1 vhosts
   become: yes
   template:
