@@ -1,4 +1,13 @@
 ---
 
-dependencies:
-  - role: nginx
+galaxy_info:
+  author: Ergon Tech
+  description: Ansible Role
+  license: MIT
+  min_ansible_version: 1.2
+  platforms:
+  - name: Ubuntu
+  versions:
+  - 16.04
+  galaxy_tags: []
+dependencies: []

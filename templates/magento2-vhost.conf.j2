@@ -1,19 +1,19 @@
 # {{ ansible_managed }}
 
 map $host $MAGE_RUN_CODE {
-{% for fqdn in fqdn %}
-    {{ fqdn.domain }} {{ fqdn.code }};
+{% for item in fqdn %}
+    {{ item.domain }} {{ item.code }};
 {% endfor %}
 }
 
 map $host $MAGE_RUN_TYPE {
-{% for fqdn in fqdn %}
-    {{ fqdn.domain }} {{ fqdn.type | default('website') }};
+{% for item in fqdn %}
+    {{ item.domain }} {{ item.type | default('website') }};
 {% endfor %}
 }
 
 upstream fastcgi_backend {
-  server unix:{{ php_fpm_listen }};
+    server unix:{{ php_fpm_listen }};
 }
 
 server {
@@ -49,8 +49,9 @@ server {
     charset UTF-8;
     error_page 404 403 = /errors/404.php;
 
-    include snippets/realip.conf;
-    include snippets/x-whom.conf;
+{% for file in nginx_snippet_includes %}
+    include snippets/{{ file }};
+{% endfor %}
 
     # NOTE: lock down phpinfo
     location ~ ^/phpinfo.php$ {
@@ -74,52 +75,9 @@ server {
         fastcgi_pass fastcgi_backend;
     }
 
-    # PHP entry point for setup application
-    location ~* ^/setup($|/) {
-        root $MAGE_ROOT;
-        location ~ ^/setup/index.php {
-            fastcgi_pass   fastcgi_backend;
-
-            fastcgi_param  PHP_FLAG  "session.auto_start=off \n suhosin.session.cryptua=off";
-            fastcgi_param  PHP_VALUE "memory_limit=768M \n max_execution_time=600";
-            fastcgi_read_timeout 600s;
-            fastcgi_connect_timeout 600s;
-
-            fastcgi_index  index.php;
-            fastcgi_param  SCRIPT_FILENAME  $realpath_root$fastcgi_script_name;
-            include        fastcgi_params;
-        }
-
-        location ~ ^/setup/(?!pub/). {
-            deny all;
-        }
-
-        location ~ ^/setup/pub/ {
-            add_header X-Frame-Options "SAMEORIGIN";
-        }
-    }
-
-    # PHP entry point for update application
-    location ~* ^/update($|/) {
-        root $MAGE_ROOT;
-
-        location ~ ^/update/index.php {
-            fastcgi_split_path_info ^(/update/index.php)(/.+)$;
-            fastcgi_pass   fastcgi_backend;
-            fastcgi_index  index.php;
-            fastcgi_param  SCRIPT_FILENAME  $realpath_root$fastcgi_script_name;
-            fastcgi_param  PATH_INFO        $fastcgi_path_info;
-            include        fastcgi_params;
-        }
-
-        # Deny everything but index.php
-        location ~ ^/update/(?!pub/). {
-            deny all;
-        }
-
-        location ~ ^/update/pub/ {
-            add_header X-Frame-Options "SAMEORIGIN";
-        }
+    # Please use the CLI for setup/update purposes
+    location ~* ^/(setup|update)($|/) {
+        deny all;
     }
 
     location / {
