@@ -9,7 +9,6 @@
   loop: "{{ nginx_snippet_includes }}"
   changed_when: false
   tags:
-    - nginx
     - nginx-configure
 
 # TODO - we can do better
@@ -24,7 +23,7 @@
      - { src: magento1-vhost.conf.j2, dest: /etc/nginx/sites-available/www.conf }
      - { src: magento1-snippet.conf.j2, dest: /etc/nginx/snippets/magento.conf }
   tags:
-    - nginx
+    - nginx-configure
   when: magento_version == "1"
 
 - name: Install nginx magento2 vhosts
@@ -37,5 +36,5 @@
   with_items:
      - { src: magento2-vhost.conf.j2, dest: /etc/nginx/sites-available/www.conf }
   tags:
-    - nginx
+    - nginx-configure
   when: magento_version == "2"
