@@ -16,7 +16,7 @@ fqdn:
     code: dev
     type: website
     includes:
-      - special-header-file-for-this-site
+      - special-header-file-for-this-site.conf
 env: dev
 magento_version: "2"
 release_pub_dir: /var/www/html
