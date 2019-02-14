@@ -9,32 +9,17 @@
   loop: "{{ nginx_snippet_includes }}"
   changed_when: false
   tags:
+    - nginx
     - nginx-configure
 
-# TODO - we can do better
-- name: Install nginx magento1 vhosts
-  become: yes
-  template:
-    src: "{{ item.src }}"
-    dest: "{{ item.dest }}"
-    mode: 0664
-  notify: restart nginx
-  with_items:
-     - { src: magento1-vhost.conf.j2, dest: /etc/nginx/sites-available/www.conf }
-     - { src: magento1-snippet.conf.j2, dest: /etc/nginx/snippets/magento.conf }
-  tags:
-    - nginx-configure
+- include_tasks: magento1.yml
   when: magento_version == "1"
-
-- name: Install nginx magento2 vhosts
-  become: yes
-  template:
-    src: "{{ item.src }}"
-    dest: "{{ item.dest }}"
-    mode: 0664
-  notify: restart nginx
-  with_items:
-     - { src: magento2-vhost.conf.j2, dest: /etc/nginx/sites-available/www.conf }
   tags:
+    - nginx
     - nginx-configure
+
+- include_tasks: magento2.yml
   when: magento_version == "2"
+  tags:
+    - nginx
+    - nginx-configure

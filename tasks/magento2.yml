@@ -1,0 +1,82 @@
+---
+
+- name: Clear out old www.conf
+  become: yes
+  file:
+    path: /etc/nginx/sites-enabled/www.conf
+    state: absent
+  tags:
+    - nginx
+    - nginx-configure
+
+- name: Ensure default conf updated in sites-available
+  become: yes
+  template:
+    src: default.conf.j2
+    dest: /etc/nginx/sites-available/default
+  tags:
+    - nginx
+    - nginx-configure
+
+- name: Ensure vhosts include vars file in conf.d directory
+  become: yes
+  template:
+    src: magento2/vhost-include-vars.conf.j2
+    dest: /etc/nginx/conf.d/vhost-include-vars.conf
+    mode: 0664
+  tags:
+    - nginx
+    - nginx-configure
+
+- name: Ensure magento2 server include file
+  become: yes
+  template:
+    src: magento2/vhost-server-includes.conf.j2
+    dest: /etc/nginx/sites-available/vhost-server-includes.conf
+    mode: 0664
+  tags:
+    - nginx
+    - nginx-configure
+
+- set_fact:
+    site_dict: "{{ fqdn }}"
+  tags:
+    - nginx
+    - nginx-configure
+
+- name: Install nginx magento2 vhosts
+  become: yes
+  template:
+    src: magento2/vhost-servers.conf.j2
+#    dest: "/etc/nginx/sites-available/{% if item.vhost_filename is defined %}{{ item.vhost_filename}}{% else %}{{ item.domain }}{% endif %}"
+    dest: "/etc/nginx/sites-available/{{ item.vhost_filename|default(item.domain) }}"
+    mode: 0664
+  loop: "{{ site_dict }}"
+  tags:
+    - nginx
+    - nginx-configure
+
+- name: Symlink default conf into sites-enabled
+  become: yes
+  file:
+    src: "/etc/nginx/sites-available/default"
+    dest: "/etc/nginx/sites-enabled/default"
+    force: yes
+    state: link
+  notify: restart nginx
+  tags:
+    - nginx
+    - nginx-configure
+
+- name: Symlink hosts files into sites-enabled
+  become: yes
+  file:
+    src: "/etc/nginx/sites-available/{{ item.vhost_filename|default(item.domain) }}"
+    dest: "/etc/nginx/sites-enabled/{{ item.vhost_filename|default(item.domain) }}"
+    force: yes
+    state: link
+  loop: "{{ site_dict }}"
+  notify: restart nginx
+  tags:
+    - nginx
+    - nginx-configure
