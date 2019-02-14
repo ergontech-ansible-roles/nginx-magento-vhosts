@@ -1,0 +1,15 @@
+#jinja2: lstrip_blocks: True
+# {{ ansible_managed }}
+
+server {
+    listen {{ nginx_listen_port }} ;
+    server_name {{ item.domain }};
+
+    {% if item.includes is defined %}
+        {% for include in item.includes %}
+            include snippets/{{ include }};
+        {% endfor %}
+    {% endif %}
+
+    include sites-available/vhost-server-includes.conf;
+}
