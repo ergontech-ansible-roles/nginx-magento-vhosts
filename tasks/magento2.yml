@@ -48,7 +48,6 @@
   become: yes
   template:
     src: magento2/vhost-servers.conf.j2
-#    dest: "/etc/nginx/sites-available/{% if item.vhost_filename is defined %}{{ item.vhost_filename}}{% else %}{{ item.domain }}{% endif %}"
     dest: "/etc/nginx/sites-available/{{ item.vhost_filename|default(item.domain) }}"
     mode: 0664
   loop: "{{ site_dict }}"
