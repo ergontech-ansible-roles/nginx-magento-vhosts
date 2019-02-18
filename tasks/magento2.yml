@@ -32,7 +32,7 @@
   become: yes
   template:
     src: magento2/vhost-server-includes.conf.j2
-    dest: "/etc/nginx/sites-available/{{ magento2_vhost_default_include }}"
+    dest: "/etc/nginx/snippets/{{ magento2_vhost_default_include }}"
     mode: 0664
   tags:
     - nginx

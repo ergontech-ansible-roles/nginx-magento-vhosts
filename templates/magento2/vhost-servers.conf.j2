@@ -5,5 +5,5 @@ server {
     listen {{ nginx_listen_port }} ;
     server_name {{ item.domain }};
 
-    include sites-available/{{ item.vhost_include|default(magento2_vhost_default_include) }};
+    include snippets/{{ item.vhost_include|default(magento2_vhost_default_include) }};
 }
