@@ -15,8 +15,7 @@ fqdn:
   - domain: dev.test.com
     code: dev
     type: website
-    includes:
-      - special-header-file-for-this-site.conf
+    vhost_includes: special-header-file-for-this-site.conf
 env: dev
 magento_version: "2"
 release_pub_dir: /var/www/html
