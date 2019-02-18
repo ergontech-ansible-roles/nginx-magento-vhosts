@@ -1,6 +1,7 @@
 ---
 
 magento_version: "2"
+magento2_vhost_default_include: "vhost-server-includes.conf"
 nginx_snippet_includes:
   - realip.conf
   - x-whom.conf

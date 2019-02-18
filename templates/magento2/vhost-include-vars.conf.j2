@@ -1,0 +1,17 @@
+# {{ ansible_managed }}
+
+map $host $MAGE_RUN_CODE {
+{% for item in fqdn %}
+    {{ item.domain }} {{ item.code }};
+{% endfor %}
+}
+
+map $host $MAGE_RUN_TYPE {
+{% for item in fqdn %}
+    {{ item.domain }} {{ item.type | default('website') }};
+{% endfor %}
+}
+
+upstream fastcgi_backend {
+    server unix:{{ php_fpm_listen }};
+}
