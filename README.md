@@ -1,7 +1,9 @@
 Nginx Magento Vhosts Role
 =========
 
-This role sets up a nginx server for magento
+This role sets up a nginx server for magento. Nginx can be configured to redirect to HTTPS,
+but your SSL certificate and key must already be placed on your server before this role is run
+with that configuration set.
 
 Role Variables
 --------------
