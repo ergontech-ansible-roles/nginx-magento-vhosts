@@ -22,6 +22,10 @@ release_pub_dir: /var/www/html
 nginx_listen_port: 80
 php_fpm_listen: 30
 mage_run_mode: yes
+nginx_https_redirect: false
+nginx_additional_ssl_options: []
+nginx_ssl_cert_location: ''
+nginx_ssl_cert_key_location: ''
 ```
 
 ----------------
