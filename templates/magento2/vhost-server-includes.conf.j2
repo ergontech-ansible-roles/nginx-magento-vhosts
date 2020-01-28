@@ -45,7 +45,6 @@ location ~ ^/phpinfo.php$ {
     deny  all;
 
     include      snippets/fastcgi-php.conf;
-    fastcgi_pass fastcgi_backend;
 }
 
 # NOTE: silence any health checks
@@ -54,7 +53,6 @@ location ~ ^/health_check.php$ {
     access_log off;
 
     include      snippets/fastcgi-php.conf;
-    fastcgi_pass fastcgi_backend;
 }
 
 # Please use the CLI for setup/update purposes
