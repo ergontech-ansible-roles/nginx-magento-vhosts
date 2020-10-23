@@ -4,26 +4,6 @@
 set $MAGE_ROOT {{ release_pub_dir }};
 set $MAGE_MODE {{ mage_run_mode }};
 
-if ($http_x_forwarded_proto = "https") {
-    set $is_https "1";
-}
-
-set $unsecure false;
-# NOTE: if the request is over http
-if ($http_x_forwarded_proto != 'https') {
-    set $unsecure true;
-}
-
-# NOTE: if the request is from aws alb
-if ($http_x_amzn_trace_id) {
-    set $unsecure "${unsecure}+aws";
-}
-
-# NOTE: redirect any http request from aws alb
-if ($unsecure = "true+aws") {
-    return 301 https://$server_name$request_uri;
-}
-
 root {{ release_pub_dir }};
 
 index index.php;
